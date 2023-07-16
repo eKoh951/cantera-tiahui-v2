@@ -2,11 +2,10 @@ import { Endpoints } from "@octokit/types";
 import Link from "next/link";
 import grayMatter from "gray-matter";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import lowerCase from "lodash-es/lowerCase";
+import { upperCase } from "lodash-es";
 
 type RepoContent =
-  Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"]["data"];
-
-type RepoFile =
   Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"]["data"];
 
 export default async function Lesson({
@@ -16,6 +15,7 @@ export default async function Lesson({
 }) {
   const { skill } = params;
   const [skillName, skillLesson] = skill;
+  console.log("skill", skill);
 
   if (!skillLesson) {
     const lessons: RepoContent = await fetch(
@@ -23,25 +23,25 @@ export default async function Lesson({
     ).then((res) => res.json());
 
     if (Array.isArray(lessons)) {
-      return lessons.map((lesson) => {
-        if (lesson.type === "file") {
-          return (
-            <ul key="a">
-              {lessons.map(({ name, url }) => (
-                <li key={name}>
-                  <Link href={url}>{name}</Link>
-                </li>
-              ))}
-            </ul>
-          );
-        }
-      });
+      return (
+        <ul>
+          {lessons.map(({ name, path }) => {
+            const [lessonPath, skillName] = path.split("/");
+            const baseName = name.split(".")[0];
+            const lessonName = upperCase(lowerCase(baseName));
+
+            return (
+              <li key={name}>
+                <Link href={`${skillName}/${baseName}`}>{lessonName}</Link>
+              </li>
+            );
+          })}
+        </ul>
+      );
     }
 
     return <></>;
-  } else {
-    const url = `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`;
-
+  } else if (skillLesson) {
     const lesson: RepoContent = await fetch(
       `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`,
       {
