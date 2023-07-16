@@ -24,7 +24,6 @@ export default async function Lesson({
 
     if (Array.isArray(lessons)) {
       return lessons.map((lesson) => {
-
         if (lesson.type === "file") {
           return (
             <ul key="a">
@@ -44,7 +43,12 @@ export default async function Lesson({
     const url = `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`;
 
     const lesson: RepoContent = await fetch(
-      `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`
+      `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`,
+      {
+        next: {
+          revalidate: 60,
+        },
+      }
     ).then((res) => res.json());
 
     if (!Array.isArray(lesson) && "content" in lesson) {
@@ -66,7 +70,6 @@ export async function generateStaticParams() {
   // you can read response.data.content in this block
   if (Array.isArray(lessons)) {
     return lessons.map((lesson) => {
-
       return {
         slug: lesson.name,
       };
