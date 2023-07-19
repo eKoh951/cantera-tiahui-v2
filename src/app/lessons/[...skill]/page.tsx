@@ -1,3 +1,5 @@
+// export const dynamicParams = true
+
 import { Endpoints } from "@octokit/types";
 import Link from "next/link";
 import grayMatter from "gray-matter";
@@ -19,7 +21,12 @@ export default async function Lesson({
 
   if (!skillLesson) {
     const lessons: RepoContent = await fetch(
-      `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}`
+      `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}`,
+      {
+        next: {
+          revalidate: 30,
+        },
+      }
     ).then((res) => res.json());
 
     if (Array.isArray(lessons)) {
@@ -46,7 +53,7 @@ export default async function Lesson({
       `https://api.github.com/repos/eKoh951/cantera-tiahui-content/contents/lessons/${skillName}/${skillLesson}.md`,
       {
         next: {
-          revalidate: 60,
+          revalidate: 30,
         },
       }
     ).then((res) => res.json());
