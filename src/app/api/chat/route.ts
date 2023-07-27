@@ -6,11 +6,10 @@ import type { NextRequest } from "next/server";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Configuration, OpenAIApi } from "openai-edge";
 
-console.log("process.env.OPENAI_API_KEY", process.env.OPENAI_API_KEY);
-
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 const openai = new OpenAIApi(config);
 
 export async function POST(request: NextRequest, res: NextResponse) {
@@ -22,8 +21,10 @@ export async function POST(request: NextRequest, res: NextResponse) {
     stream: true,
     messages,
   });
+
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
+
   // Respond with the stream
   return new StreamingTextResponse(stream);
 }
