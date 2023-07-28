@@ -14,7 +14,7 @@ export default async function Chat() {
   );
   const parsedPrompts = fullPrompts.map((prompt) => {
     const parsedObject = remark().use(remarkParse).parse(atob(prompt.content));
-    const parsedPrompt = parsedObject.children.map((child) => {
+    const parsedPrompt = parsedObject.children.map((child: any) => {
       return {
         type: child.type,
         value: child?.children[0]?.value,
