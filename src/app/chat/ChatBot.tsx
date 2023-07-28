@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useChat } from "ai/react";
 import ComboBox from "../components/AutoComplete";
 
@@ -11,7 +12,17 @@ interface Props {
 }
 
 export default function ChatBot({ prompts }: Props) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const [systemPrompt, setSystemPrompt] = React.useState(prompts[0]);
+
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    initialMessages: [
+      {
+        id: "1",
+        role: "system",
+        content: systemPrompt.value,
+      },
+    ],
+  });
 
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
@@ -24,8 +35,12 @@ export default function ChatBot({ prompts }: Props) {
           ))
         : null}
 
+      <ComboBox
+        systemPrompt={systemPrompt}
+        setSystemPrompt={setSystemPrompt}
+        systemPromptOptions={prompts}
+      />
       <form onSubmit={handleSubmit}>
-        <ComboBox options={prompts} />
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}
